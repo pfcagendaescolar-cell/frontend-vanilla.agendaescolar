@@ -16,6 +16,59 @@ const FERIADOS_ESTADUAIS = [
 const PRIORIDADES = { "prova": 1, "trabalho": 2, "tarefa": 3, "evento": 4 };
 
 // =============================
+// SISTEMA DE NOTIFICAÇÕES (Toast)
+// =============================
+
+/**
+ * Exibe uma notificação toast na tela
+ * @param {string} message - Mensagem a exibir
+ * @param {string} type - Tipo: 'success', 'error', 'warning', 'info'
+ * @param {number} duration - Duração em ms (padrão: 5000 para erro, 3000 para sucesso)
+ */
+function showNotification(message, type = 'info', duration = null) {
+    const container = document.getElementById('notificationContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'polite');
+
+    container.appendChild(toast);
+
+    // Duração padrão por tipo
+    if (duration === null) {
+        duration = type === 'error' ? 5000 : 3000;
+    }
+
+    // Auto-remove após duração
+    if (duration > 0) {
+        setTimeout(() => {
+            toast.classList.add('removing');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+}
+
+// Aliases para facilitar uso
+function showSuccess(message, duration) {
+    showNotification(message, 'success', duration);
+}
+
+function showError(message, duration) {
+    showNotification(message, 'error', duration);
+}
+
+function showWarning(message, duration) {
+    showNotification(message, 'warning', duration);
+}
+
+function showInfo(message, duration) {
+    showNotification(message, 'info', duration);
+}
+
+// =============================
 // ESTADO GLOBAL
 // =============================
 
@@ -191,15 +244,22 @@ function renderizarTurmas() {
     }
 
     turmas.forEach(turma => {
+        // ✅ Mostrar TODAS as turmas para visualização
         const btn = document.createElement('button');
         btn.className = 'turma-card';
         btn.innerHTML = `${turma.nome} <br><small style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">${turma.curso || ''}</small>`;
+        
+        // ✅ Todos conseguem visualizar qualquer turma
+        // Restrições de edição estão no backend
         btn.onclick = () => selecionarTurma(turma);
+        
         turmasList.appendChild(btn);
     });
 }
 
 function selecionarTurma(turma) {
+    // ✅ Permite visualização de qualquer turma
+    // Restrições de modificação estão no backend (middleware validarAcessoTurma)
     turmaAtual = turma;
     localStorage.setItem('ifpr_selected_turma_v1', JSON.stringify(turma));
     verificarEstadoInicial();
@@ -397,6 +457,7 @@ function renderizarListaDeEventos(chaveData) {
     const listaHtml = document.getElementById('eventsList');
     listaHtml.innerHTML = "";
 
+    const userLogged = JSON.parse(localStorage.getItem('ifpr_user_logged')) || {};
     const eventosDoDia = getEventosPorData(chaveData);
 
     if (eventosDoDia.length === 0) {
@@ -415,9 +476,13 @@ function renderizarListaDeEventos(chaveData) {
             ? '<span style="font-size:0.65rem; background:var(--primary); color:white; padding:1px 6px; border-radius:8px; margin-left:6px;">GERAL</span>'
             : '';
 
-        // ✅ CORREÇÃO: Validar se o líder pode editar este evento
-        // Líder só pode excluir eventos de sua própria turma
-        const podeEditar = liderLogado && (ev.turmaId === turmaAtual.id || ev.tipo === 'geral');
+        // ✅ SEGURANÇA: Validar se o LÍDER pode editar este evento
+        // Líder só pode deletar eventos de sua própria turma
+        const podeEditar = liderLogado && (
+            (userLogged.role === 'admin') ||  // Admin sempre pode
+            (userLogged.role === 'turma_admin' && userLogged._id && ev.turmaId === userLogged._id) ||  // Líder só da sua turma
+            (ev.tipo === 'geral')  // Geral qualquer um pode
+        );
         const btnRemover = podeEditar
             ? `<button onclick="removerAtividade('${ev._id}')">🗑️</button>` : '';
 
@@ -483,6 +548,32 @@ window.removerAtividade = async (eventoId) => {
     if (!confirm("Deseja apagar?")) return;
 
     try {
+        // ✅ SEGURANÇA: Validar antes de enviar requisição
+        const userLogged = JSON.parse(localStorage.getItem('ifpr_user_logged')) || {};
+        
+        // Se é líder, precisar buscaro evento para validar turma
+        if (userLogged.role === 'turma_admin' && userLogged._id) {
+            const eventos = await fetch(`${API_BASE}/eventos`).then(r => r.json());
+            const evento = eventos.find(e => e._id === eventoId);
+            
+            if (!evento) {
+                showError('Evento não encontrado.');
+                return;
+            }
+            
+            // Líder PODE deletar apenas eventos de sua turma ou gerais
+            if (evento.turmaId !== userLogged._id && evento.tipo !== 'geral') {
+                console.warn(`🚫 [SEGURANÇA] Líder tentou deletar evento de outra turma:`, {
+                    usuarioTurmaId: userLogged._id,
+                    eventoTurmaId: evento.turmaId,
+                    eventoId: eventoId,
+                    email: userLogged.email
+                });
+                showError('Acesso Negado: Você só pode deletar eventos de sua própria turma.');
+                return;
+            }
+        }
+
         const headers = obterHeadersAutenticacao();
         
         const res = await fetch(`${API_BASE}/eventos/${eventoId}`, { 
@@ -504,7 +595,7 @@ window.removerAtividade = async (eventoId) => {
         if (chave) renderizarListaDeEventos(chave);
     } catch (err) {
         console.error(err);
-        alert(`Erro ao remover evento: ${err.message}`);
+        showError(`Erro ao remover evento: ${err.message}`);
     }
 };
 
@@ -661,7 +752,7 @@ function configurarEventosInterface() {
             if (novaSenhaConfirm === null) return;
 
             if (novaSenha !== novaSenhaConfirm) {
-                alert("As senhas não coincidem!");
+                showError("As senhas não coincidem!");
                 return;
             }
 
@@ -678,13 +769,13 @@ function configurarEventosInterface() {
 
                 const data = await res.json();
                 if (res.ok) {
-                    alert("Senha alterada com sucesso!");
+                    showSuccess("Senha alterada com sucesso!");
                 } else {
-                    alert(data.error || "Erro ao alterar senha.");
+                    showError(data.error || "Erro ao alterar senha.");
                 }
             } catch (err) {
                 console.error(err);
-                alert("Erro de conexão com o servidor.");
+                showError("Erro de conexão com o servidor.");
             }
         };
     }
@@ -722,25 +813,30 @@ function configurarEventosInterface() {
         const chave = document.getElementById('eventDate').value;
         const userLogged = JSON.parse(localStorage.getItem('ifpr_user_logged')) || {};
 
-        // ✅ SEGURANÇA: Validação de turma para líderes
+        // ✅ SEGURANÇA: Validação RIGOROSA de turma para líderes
         if (userLogged.role === 'turma_admin' && userLogged._id) {
-            // Líder só pode criar eventos de sua própria turma
-            if (turmaAtual.id !== userLogged._id) {
-                alert('❌ Acesso Negado: Você só pode criar eventos de sua própria turma.');
+            // Líder PRECISA estar visualizando sua própria turma para criar evento
+            if (!turmaAtual || turmaAtual.id !== userLogged._id) {
+                console.warn(`🚫 [SEGURANÇA] Líder tentou criar evento fora de sua turma:`, {
+                    usuarioTurmaId: userLogged._id,
+                    turmaSelecionada: turmaAtual?.id,
+                    usuarioEmail: userLogged.email
+                });
+                showError('Acesso Negado: Você só pode criar eventos de sua própria turma.');
                 return false;
             }
         }
 
         const novo = {
             titulo: document.getElementById('title').value,
-            categoria: document.getElementById('type').value,  // ✅ CORREÇÃO: campo correto
-            tipo: 'turma',  // ✅ Indicar que é evento de turma
+            categoria: document.getElementById('type').value,
+            tipo: 'turma',
             data: chave,
             hora: document.getElementById('time').value,
             descricao: document.getElementById('description').value,
             turmaId: turmaAtual.id,
-            criadoPor: 'líder',  // ✅ Rastreamento
-            usuarioId: userLogged.email || 'unknown'  // ✅ Rastreamento
+            criadoPor: 'líder',
+            usuarioId: userLogged.email || 'unknown'
         };
 
         try {
@@ -774,7 +870,7 @@ function configurarEventosInterface() {
             return false;
         } catch (err) {
             console.error(err);
-            alert(`Erro ao salvar evento: ${err.message}`);
+            showError(`Erro ao salvar evento: ${err.message}`);
             return false;
         }
     };
@@ -783,6 +879,7 @@ function configurarEventosInterface() {
 // =============================
 // TEMA
 // =============================
+
 
 function carregarConfiguracoesTema() {
     const t = localStorage.getItem('ifpr_tema') || 'light';

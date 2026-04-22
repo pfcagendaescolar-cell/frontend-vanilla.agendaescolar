@@ -298,40 +298,9 @@ body {
     opacity: 0.9;
 }
 
-/* Sidebar Estilos (se faltar) */
-.sidebar {
-    position: fixed;
-    top: 0;
-    right: -300px;
-    width: 300px;
-    height: 100%;
-    background: var(--bg-card);
-    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 2000;
-    transition: right 0.3s ease;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar.active {
-    right: 0;
-}
-
-.menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1999;
-    display: none;
-}
-
-.menu-overlay.active {
-    display: block;
-}
+/* =======================================
+   SEÇÃO DE SIDEBAR - Estilos Definidos Abaixo
+   ======================================= */
 
 /* Link do Instagram com ícone */
 .nav-link-instagram {
@@ -442,8 +411,6 @@ body {
         border: none;
         cursor: pointer;
         padding: 10px 16px;
-        /* align-self: flex-end; REMOVIDO */
-        /* margin-left: auto; REMOVIDO */
     }
 
     /* Posicionamento do Toggle e Hambúrguer no Mobile */
@@ -457,7 +424,6 @@ body {
     .nav-theme-toggle {
         margin-left: 0;
         order: -1;
-        /* Coloca o toggle à esquerda ou mantém onde desejar */
     }
 
     .nav-ham-line {
@@ -511,6 +477,46 @@ body {
     .nav-link:hover {
         background-color: rgba(255, 255, 255, 0.12);
     }
+
+    /* ========== LOGIN RESPONSIVO ========== */
+    .login-wrapper {
+        padding: 16px;
+        min-height: auto;
+        /* Ajusta para não forçar 100vh */
+        padding-top: 140px;
+        /* Espaço do header */
+        padding-bottom: 40px;
+    }
+
+    .login-card {
+        max-width: 100%;
+        padding: 22px;
+        gap: 16px;
+    }
+
+    .login-title {
+        font-size: 1.3rem;
+    }
+
+    .login-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .login-form .input-group input {
+        height: 42px;
+        font-size: 0.9rem;
+    }
+
+    .btn-login,
+    .btn-save {
+        height: 42px;
+        font-size: 0.9rem;
+    }
+
+    .btn-sidebar {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
 }
 
 /* --- Telas muito pequenas (≤ 360px) --- */
@@ -537,7 +543,10 @@ body {
     }
 }
 
-/* Sidebar (Drawer Moderno) */
+/* =======================================
+   SIDEBAR (Drawer Modal)
+   ======================================= */
+
 .sidebar {
     position: fixed;
     left: -320px;
@@ -551,6 +560,7 @@ body {
     box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .sidebar.active {
@@ -561,28 +571,30 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px;
+    padding: 20px 24px;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 10px;
+    flex-shrink: 0;
 }
 
 .sidebar-header h3 {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-main);
     display: flex;
     align-items: center;
+    margin: 0;
 }
 
 .close-menu-btn {
     background: none;
     border: none;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     line-height: 1;
     cursor: pointer;
     color: var(--text-main);
     opacity: 0.6;
-    transition: 0.2s;
+    transition: opacity 0.2s, color 0.2s;
+    padding: 0 8px;
 }
 
 .close-menu-btn:hover {
@@ -592,24 +604,27 @@ body {
 
 .menu-items {
     list-style: none;
-    padding: 0 24px;
+    padding: 12px 20px;
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .menu-overlay {
-    display: none;
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.45);
     z-index: 1001;
     backdrop-filter: blur(2px);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .menu-overlay.active {
-    display: block;
     opacity: 1;
+    visibility: visible;
 }
 
 /* Responsividade do Sidebar */
@@ -1026,78 +1041,133 @@ body {
     background: var(--cat-evento);
 }
 
-/* Sidebar e Botões */
+/* =======================================
+   BOTÕES SIDEBAR
+   ======================================= */
+
 .btn-sidebar {
-    width: 100%;
-    padding: 13px;
+    width: 100%;\n    padding: 11px 14px;
     border: none;
-    border-radius: 8px;
-    background: #2e7d32;
+    border-radius: 10px;
+    background: var(--primary);
     color: white;
     cursor: pointer;
     font-weight: 500;
-    font-size: 1rem;
-    margin-top: 15px;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 6px rgba(50, 160, 65, 0.15);
+    font-family: 'Inter', sans-serif;
 }
 
 .btn-sidebar:hover {
-    background: #1b5e20;
+    background: #2a8f38;
     transform: translateY(-1px);
-    box-shadow: 0 6px 12px rgba(46, 125, 50, 0.2);
+    box-shadow: 0 4px 12px rgba(50, 160, 65, 0.25);
+}
+
+.btn-sidebar:active {
+    transform: translateY(0);
 }
 
 .btn-logout {
     background-color: #64748b;
+    box-shadow: 0 2px 6px rgba(100, 116, 139, 0.15);
 }
 
 .btn-logout:hover {
     background-color: #475569;
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.25);
 }
 
-/* Formulário Admin */
+/* =======================================
+   FORMULÁRIOS (Input, Select, Textarea)
+   ======================================= */
+
 .input-group {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .input-group label {
     display: block;
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-bottom: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
 }
 
 .input-group input,
 .input-group select,
 .input-group textarea {
     width: 100%;
-    padding: 10px;
-    border-radius: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
     border: 1px solid var(--border);
     background: var(--bg-body);
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(50, 160, 65, 0.1);
+    background: var(--bg-card);
 }
 
 .input-group textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+.input-group input::placeholder {
+    color: var(--text-main);
+    opacity: 0.5;
 }
 
 .btn-save {
     width: 100%;
-    padding: 12px;
+    padding: 11px 16px;
+    height: 46px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--primary);
     color: white;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 2px 6px rgba(50, 160, 65, 0.15);
+}
+
+.btn-save:hover:not(:disabled) {
+    background: #2a8f38;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(50, 160, 65, 0.25);
+}
+
+.btn-save:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .switch {
@@ -1611,5 +1681,374 @@ input:checked+.slider:before {
     .about-list li {
         font-size: 0.9rem;
         padding: 6px 0 6px 24px;
+    }
+}
+
+/* ========================================
+   LOGIN MODERNO - Telas de Autenticação
+   ======================================== */
+
+/* Container Principal do Login */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: var(--bg-body);
+}
+
+/* Card de Login */
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cabeçalho do Login */
+.login-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+}
+
+.login-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.login-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    opacity: 0.7;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Tabs de Login (Entrar/Criar Conta) */
+.login-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.login-tab {
+    flex: 1;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-main);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.login-tab:hover {
+    opacity: 0.85;
+}
+
+.login-tab.active {
+    color: var(--primary);
+    opacity: 1;
+    border-bottom-color: var(--primary);
+}
+
+/* Formulário de Login */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Aprimoramento de Inputs para Login */
+.login-form .input-group {
+    margin-bottom: 0;
+}
+
+.login-form .input-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-main);
+}
+
+.login-form .input-group input {
+    height: 46px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-body);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.login-form .input-group input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(50, 160, 65, 0.1);
+    background: var(--bg-card);
+}
+
+.login-form .input-group input::placeholder {
+    color: var(--text-main);
+    opacity: 0.5;
+}
+
+/* Botão de Login */
+.btn-login {
+    height: 46px;
+    border-radius: 10px;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.btn-login:hover:not(:disabled) {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(50, 160, 65, 0.25);
+}
+
+.btn-login:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Mensagem de Erro do Login */
+.login-error {
+    display: none;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+    animation: slideDownFade 0.2s ease-out;
+}
+
+.login-error.show {
+    display: block;
+}
+
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* User Card (Status Logado) */
+.user-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.user-card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+
+.user-card strong {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Admin Form Area */
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 0;
+}
+
+.admin-form h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0;
+}
+
+/* ========================================
+   SISTEMA DE NOTIFICAÇÕES (Toast)
+   ======================================== */
+
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 360px;
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    animation: slideInRight 0.3s ease-out;
+    pointer-events: auto;
+    backdrop-filter: blur(8px);
+    border: 1px solid;
+}
+
+/* ✅ Sucesso */
+.toast.success {
+    background: rgba(16, 185, 129, 0.95);
+    color: white;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.toast.success::before {
+    content: "✓";
+    font-size: 1.2rem;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* ❌ Erro */
+.toast.error {
+    background: rgba(239, 68, 68, 0.95);
+    color: white;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.toast.error::before {
+    content: "✕";
+    font-size: 1.2rem;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* ⚠️ Aviso */
+.toast.warning {
+    background: rgba(245, 158, 11, 0.95);
+    color: white;
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.toast.warning::before {
+    content: "⚠";
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* ℹ️ Informação */
+.toast.info {
+    background: rgba(59, 130, 246, 0.95);
+    color: white;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.toast.info::before {
+    content: "ℹ";
+    font-size: 1rem;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* Animações */
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.toast.removing {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+
+/* Modo Dark - Ajustes */
+[data-theme="dark"] .toast {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsivo - Mobile */
+@media (max-width: 640px) {
+    .notification-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+
+    .toast {
+        font-size: 0.9rem;
+        padding: 12px 14px;
     }
 }
